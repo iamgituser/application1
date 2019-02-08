@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-webapptwo-deployment
+  namespace: webapps
+  labels:
+    app: tomcat-webapptwo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat-webapptwo
+  template:
+    metadata:
+      labels:
+        app: tomcat-webapptwo
+    spec:
+      containers:
+      - name: tomcat-webapptwo
+        image: iamdockeruser/demo:5
+        resources:
+          requests:
+            memory: "250Mi"
+            cpu: "100m"
+          limits:
+            memory: "250Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: tomcat-webapptwo-deployment
+  namespace: webapps
+spec:
+  minReplicas: 1
+  maxReplicas: 10
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: tomcat-webapptwo-deployment
+  targetCPUUtilizationPercentage: 35
